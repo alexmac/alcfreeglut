@@ -1545,8 +1545,9 @@ void FGAPIENTRY glutMainLoop( void )
     AS3_LibInit();
 }
 
-void FGAPIENTRY _avm2_glut_keyhandler(int keycode, int isDown, int mx, int my)
+void FGAPIENTRY _avm2_glut_keyhandler(int keycode, int charcode, int isDown, int mx, int my)
 {
+    fprintf(stderr, "_avm2_glut_keyhandler\n");
     int keypress = -1;
 
     SFG_Window *window = (SFG_Window *)fgStructure.Windows.First;
@@ -1570,7 +1571,7 @@ void FGAPIENTRY _avm2_glut_keyhandler(int keycode, int isDown, int mx, int my)
         KEY( 17,  GLUT_KEY_CTRL_L    );
         KEY( 16,  GLUT_KEY_SHIFT_L   );
         KEYN( 46, 127);
-        default: keypress = keycode;
+        default: keypress = charcode;
     }
 
     if(isDown) {

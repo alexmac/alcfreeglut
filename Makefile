@@ -1,5 +1,5 @@
-$?ALCHEMY:=/path/to/alchemy/SDK
-$?GLS3D:=/path/to/gls3d
+?ALCHEMY:=/path/to/alchemy/SDK
+$?GLS3D:=/path/to/gls3d/install/usr
 
 SRC=$(wildcard src/*.c)
 OBJS=$(subst .c,.o,$(SRC))
@@ -206,4 +206,5 @@ compile: $(OBJS)
 
 .c.o:
 	@echo "Compiling $<"
-	@$(ALCHEMY)/usr/bin/gcc -DHAVE_GETTIMEOFDAY -DHAVE_ERRNO_H -DHAVE_LIMITS_H -DHAVE_VFPRINTF -DHAVE_UNISTD_H -O4 -c -I$(GLS3D)/include/ -Iinstall/usr/include/ $< -o $@
+	@$(ALCHEMY)/usr/bin/gcc -DHAVE_GETTIMEOFDAY -DHAVE_ERRNO_H -DHAVE_LIMITS_H -DHAVE_VFPRINTF -DHAVE_UNISTD_H -O4 -c \
+		-I$(GLS3D)/include/ -Iinstall/usr/include/ $< -o $@
