@@ -202,8 +202,6 @@ package com.adobe.alchemy
 
     public function bufferKeyDown(ke:KeyboardEvent) 
     {
-      if (GLAPI.instance && GLAPI.instance.consoleOn)
-        return;
       ke.stopPropagation();
 
       keyhandlerargs[0] = ke.keyCode;
@@ -215,8 +213,6 @@ package com.adobe.alchemy
     
     public function bufferKeyUp(ke:KeyboardEvent) 
     {
-        if (GLAPI.instance && GLAPI.instance.consoleOn)
-            return;
       ke.stopPropagation();
 
       keyhandlerargs[0] = ke.keyCode;
@@ -254,7 +250,6 @@ package com.adobe.alchemy
     {
       var gl:GLAPI = GLAPI.instance;
       CModule.callFun(mainloopTickPtr, new Vector.<int>());
-      gl.renderDebugHelpers();
       gl.context.present();
       gl.context.clear(1.0, 0.0, 0.0);
     }

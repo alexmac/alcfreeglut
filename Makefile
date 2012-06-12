@@ -1,5 +1,5 @@
 ?ALCHEMY:=/path/to/alchemy/SDK
-$?GLS3D:=/path/to/gls3d/install/usr
+$?GLS3D:=/path/to/gls3d
 
 SRC=$(wildcard src/*.c)
 OBJS=$(subst .c,.o,$(SRC))
@@ -23,7 +23,7 @@ demos/AlcConsole.abc: demos/AlcConsole.as
 	-abcfuture -AS3 -strict -optimize \
 	-import $(ALCHEMY)/usr/lib/builtin.abc \
 	-import $(ALCHEMY)/usr/lib/playerglobal.abc \
-	-import $(GLS3D)/lib/libGL.abc \
+	-import $(GLS3D)/install/usr/lib/libGL.abc \
 	-import $(ALCHEMY)/usr/lib/CModule.abc \
 	-import $(ALCHEMY)/usr/lib/C_Run.abc \
 	-import $(ALCHEMY)/usr/lib/initLib.abc \
@@ -35,29 +35,29 @@ demos: demos/AlcConsole.abc
 
 	@echo "Compiling lesson1.swf"
 	@$(ALCHEMY)/usr/bin/g++ -O4 \
-		-I$(GLS3D)/include/ \
+		-I$(GLS3D)/install/usr/include/ \
 		-Iinstall/usr/include/ \
 		-Linstall/usr/lib/ \
-		-L$(GLS3D)/lib/ \
-		demos/NeHeLesson01/lesson1.cpp $(GLS3D)/lib/libGL.abc -lGL -lglut \
+		-L$(GLS3D)/install/usr/lib/ \
+		demos/NeHeLesson01/lesson1.cpp $(GLS3D)/install/usr/lib/libGL.abc -lGL -lglut \
 		-symbol-abc=demos/AlcConsole.abc -swf-size=500x500 -emit-swf -o demos/lesson1.swf
 
 	@echo "Compiling lesson2.swf"
 	@$(ALCHEMY)/usr/bin/g++ -O4 \
-		-I$(GLS3D)/include/ \
+		-I$(GLS3D)/install/usr/include/ \
 		-Iinstall/usr/include/ \
 		-Linstall/usr/lib/ \
-		-L$(GLS3D)/lib/ \
-		demos/NeHeLesson02/lesson2.cpp $(GLS3D)/lib/libGL.abc -lGL -lglut \
+		-L$(GLS3D)/install/usr/lib/ \
+		demos/NeHeLesson02/lesson2.cpp $(GLS3D)/install/usr/lib/libGL.abc -lGL -lglut \
 		-symbol-abc=demos/AlcConsole.abc -swf-size=500x500 -emit-swf -o demos/lesson2.swf
 
 	@echo "Compiling shapes.swf"
 	@$(ALCHEMY)/usr/bin/gcc -O4 \
-		-I$(GLS3D)/include/ \
+		-I$(GLS3D)/install/usr/include/ \
 		-Iinstall/usr/include/ \
 		-Linstall/usr/lib/ \
-		-L$(GLS3D)/lib/ \
-		demos/shapes.c $(GLS3D)/lib/libGL.abc -lGL -lglut \
+		-L$(GLS3D)/install/usr/lib/ \
+		demos/shapes.c $(GLS3D)/install/usr/lib/libGL.abc -lGL -lglut \
 		-symbol-abc=demos/AlcConsole.abc -swf-size=500x500 -emit-swf -o demos/shapes.swf
 
 	@echo "Compiling lesson19.swf"
@@ -71,11 +71,11 @@ demos: demos/AlcConsole.abc
 	-import $(ALCHEMY)/usr/lib/PlayerPosix.abc \
 	embed*.as -outdir . -out embed
 	@$(ALCHEMY)/usr/bin/g++ -O4 \
-		-I$(GLS3D)/include/ \
+		-I$(GLS3D)/install/usr/include/ \
 		-Iinstall/usr/include/ \
 		-Linstall/usr/lib/ \
-		-L$(GLS3D)/lib/ \
-		demos/NeHeLesson19/lesson19.cpp $(GLS3D)/lib/libGL.abc -lGL -lglut \
+		-L$(GLS3D)/install/usr/lib/ \
+		demos/NeHeLesson19/lesson19.cpp $(GLS3D)/install/usr/lib/libGL.abc -lGL -lglut \
 		-symbol-abc=demos/AlcConsole.abc demos/NeHeLesson19/embed*.abc -swf-size=500x500 -emit-swf -o demos/lesson19.swf
 
 	@echo "Compiling lesson11.swf"
@@ -89,11 +89,11 @@ demos: demos/AlcConsole.abc
 	-import $(ALCHEMY)/usr/lib/PlayerPosix.abc \
 	embed*.as -outdir . -out embed
 	@$(ALCHEMY)/usr/bin/g++ -O4 \
-		-I$(GLS3D)/include/ \
+		-I$(GLS3D)/install/usr/include/ \
 		-Iinstall/usr/include/ \
 		-Linstall/usr/lib/ \
-		-L$(GLS3D)/lib/ \
-		demos/NeHeLesson11/lesson11.cpp $(GLS3D)/lib/libGL.abc -lGL -lglut \
+		-L$(GLS3D)/install/usr/lib/ \
+		demos/NeHeLesson11/lesson11.cpp $(GLS3D)/install/usr/lib/libGL.abc -lGL -lglut \
 		-symbol-abc=demos/AlcConsole.abc demos/NeHeLesson11/embed*.abc -swf-size=500x500 -emit-swf -o demos/lesson11.swf
 
 	@echo "Compiling lesson12.swf"
@@ -107,11 +107,11 @@ demos: demos/AlcConsole.abc
 	-import $(ALCHEMY)/usr/lib/PlayerPosix.abc \
 	embed*.as -outdir . -out embed
 	@$(ALCHEMY)/usr/bin/g++ -O4 \
-		-I$(GLS3D)/include/ \
+		-I$(GLS3D)/install/usr/include/ \
 		-Iinstall/usr/include/ \
 		-Linstall/usr/lib/ \
-		-L$(GLS3D)/lib/ \
-		demos/NeHeLesson12/lesson12.cpp $(GLS3D)/lib/libGL.abc -lGL -lglut \
+		-L$(GLS3D)/install/usr/lib/ \
+		demos/NeHeLesson12/lesson12.cpp $(GLS3D)/install/usr/lib/libGL.abc -lGL -lglut \
 		-symbol-abc=demos/AlcConsole.abc demos/NeHeLesson12/embed*.abc -swf-size=500x500 -emit-swf -o demos/lesson12.swf
 
 	@echo "Compiling lesson8.swf"
@@ -125,12 +125,12 @@ demos: demos/AlcConsole.abc
 	-import $(ALCHEMY)/usr/lib/PlayerPosix.abc \
 	embed*.as -outdir . -out embed
 	@$(ALCHEMY)/usr/bin/g++ -O4 \
-		-I$(GLS3D)/include/ \
+		-I$(GLS3D)/install/usr/include/ \
 		-Iinstall/usr/include/ \
 		-Linstall/usr/lib/ \
-		-L$(GLS3D)/lib/ \
+		-L$(GLS3D)/install/usr/lib/ \
 		-Idemos/NeHeCommon/ \
-		demos/NeHeLesson08/lesson8.cpp demos/NeHeCommon/tgaload.cpp $(GLS3D)/lib/libGL.abc -lGL -lglut \
+		demos/NeHeLesson08/lesson8.cpp demos/NeHeCommon/tgaload.cpp $(GLS3D)/install/usr/lib/libGL.abc -lGL -lglut \
 		-symbol-abc=demos/AlcConsole.abc demos/NeHeLesson08/embed*.abc -swf-size=500x500 -emit-swf -o demos/lesson8.swf
 
 	@echo "Compiling lesson7.swf"
@@ -144,12 +144,12 @@ demos: demos/AlcConsole.abc
 	-import $(ALCHEMY)/usr/lib/PlayerPosix.abc \
 	embed*.as -outdir . -out embed
 	@$(ALCHEMY)/usr/bin/g++ -O4 \
-		-I$(GLS3D)/include/ \
+		-I$(GLS3D)/install/usr/include/ \
 		-Iinstall/usr/include/ \
 		-Linstall/usr/lib/ \
-		-L$(GLS3D)/lib/ \
+		-L$(GLS3D)/install/usr/lib/ \
 		-Idemos/NeHeCommon/ \
-		demos/NeHeLesson07/lesson7.cpp demos/NeHeCommon/tgaload.cpp $(GLS3D)/lib/libGL.abc -lGL -lglut \
+		demos/NeHeLesson07/lesson7.cpp demos/NeHeCommon/tgaload.cpp $(GLS3D)/install/usr/lib/libGL.abc -lGL -lglut \
 		-symbol-abc=demos/AlcConsole.abc demos/NeHeLesson07/embed*.abc -swf-size=500x500 -emit-swf -o demos/lesson7.swf
 
 	@echo "Compiling lesson6.swf"
@@ -163,39 +163,39 @@ demos: demos/AlcConsole.abc
 	-import $(ALCHEMY)/usr/lib/PlayerPosix.abc \
 	embed*.as -outdir . -out embed
 	@$(ALCHEMY)/usr/bin/g++ -O4 \
-		-I$(GLS3D)/include/ \
+		-I$(GLS3D)/install/usr/include/ \
 		-Iinstall/usr/include/ \
 		-Linstall/usr/lib/ \
-		-L$(GLS3D)/lib/ \
+		-L$(GLS3D)/install/usr/lib/ \
 		-Idemos/NeHeCommon/ \
-		demos/NeHeLesson06/lesson06.cpp demos/NeHeCommon/tgaload.cpp $(GLS3D)/lib/libGL.abc -lGL -lglut \
+		demos/NeHeLesson06/lesson06.cpp demos/NeHeCommon/tgaload.cpp $(GLS3D)/install/usr/lib/libGL.abc -lGL -lglut \
 		-symbol-abc=demos/AlcConsole.abc demos/NeHeLesson06/embed*.abc -swf-size=500x500 -emit-swf -o demos/lesson6.swf
 
 	@echo "Compiling lesson5.swf"
 	@$(ALCHEMY)/usr/bin/gcc -O4 \
-		-I$(GLS3D)/include/ \
+		-I$(GLS3D)/install/usr/include/ \
 		-Iinstall/usr/include/ \
 		-Linstall/usr/lib/ \
-		-L$(GLS3D)/lib/ \
-		demos/NeHeLesson05/lesson5.c $(GLS3D)/lib/libGL.abc -lGL -lglut \
+		-L$(GLS3D)/install/usr/lib/ \
+		demos/NeHeLesson05/lesson5.c $(GLS3D)/install/usr/lib/libGL.abc -lGL -lglut \
 		-symbol-abc=demos/AlcConsole.abc -swf-size=500x500 -emit-swf -o demos/lesson5.swf
 	
 	@echo "Compiling lesson3.swf"
 	@$(ALCHEMY)/usr/bin/gcc -O4 \
-		-I$(GLS3D)/include/ \
+		-I$(GLS3D)/install/usr/include/ \
 		-Iinstall/usr/include/ \
 		-Linstall/usr/lib/ \
-		-L$(GLS3D)/lib/ \
-		demos/NeHeLesson03/lesson3.c $(GLS3D)/lib/libGL.abc -lGL -lglut \
+		-L$(GLS3D)/install/usr/lib/ \
+		demos/NeHeLesson03/lesson3.c $(GLS3D)/install/usr/lib/libGL.abc -lGL -lglut \
 		-symbol-abc=demos/AlcConsole.abc -swf-size=500x500 -emit-swf -o demos/lesson3.swf
 
 	@echo "Compiling lesson4.swf"
 	@$(ALCHEMY)/usr/bin/gcc -O4 \
-		-I$(GLS3D)/include/ \
+		-I$(GLS3D)/install/usr/include/ \
 		-Iinstall/usr/include/ \
 		-Linstall/usr/lib/ \
-		-L$(GLS3D)/lib/ \
-		demos/NeHeLesson04/lesson4.c $(GLS3D)/lib/libGL.abc -lGL -lglut \
+		-L$(GLS3D)/install/usr/lib/ \
+		demos/NeHeLesson04/lesson4.c $(GLS3D)/install/usr/lib/libGL.abc -lGL -lglut \
 		-symbol-abc=demos/AlcConsole.abc -swf-size=500x500 -emit-swf -o demos/lesson4.swf
 	@echo "Compiling shapes.swf"
 
@@ -207,4 +207,4 @@ compile: $(OBJS)
 .c.o:
 	@echo "Compiling $<"
 	@$(ALCHEMY)/usr/bin/gcc -DHAVE_GETTIMEOFDAY -DHAVE_ERRNO_H -DHAVE_LIMITS_H -DHAVE_VFPRINTF -DHAVE_UNISTD_H -O4 -c \
-		-I$(GLS3D)/include/ -Iinstall/usr/include/ $< -o $@
+		-I$(GLS3D)/install/usr/include/ -Iinstall/usr/include/ $< -o $@
