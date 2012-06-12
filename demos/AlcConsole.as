@@ -1,73 +1,37 @@
 package com.adobe.alchemy
 {
-  import flash.display.Sprite;
-  import flash.text.TextField;
-  import flash.display.StageScaleMode;
-  import flash.display.DisplayObjectContainer;
   import flash.display.Bitmap
   import flash.display.BitmapData
-  import flash.net.URLRequest;
-  import flash.net.URLLoader;
-  import flash.net.URLLoaderDataFormat;
-  import flash.events.EventDispatcher;
-  import flash.events.ProgressEvent;
-  import flash.events.SecurityErrorEvent;
-  import flash.events.IOErrorEvent;
-  import flash.events.AsyncErrorEvent;
-  import flash.geom.Rectangle
-  import flash.utils.ByteArray
-  import flash.net.LocalConnection;
-  import flash.net.URLRequest;
-  import flash.events.Event;
-  import flash.events.KeyboardEvent;
-  import flash.events.MouseEvent;
-  import flash.media.SoundChannel;
-  import flash.media.Sound;
-  import flash.events.SampleDataEvent;
-  import C_Run.ram;
-  import C_Run.initLib;
-  import Stage3DGL.GLAPI;
+  import flash.display.DisplayObjectContainer;
+  import flash.display.Sprite;
   import flash.display.Stage3D;
+  import flash.display.StageAlign;
+  import flash.display.StageScaleMode;
   import flash.display3D.Context3D;
   import flash.display3D.Context3DRenderMode;
-  import flash.display.StageAlign;
+  import flash.events.AsyncErrorEvent;
+  import flash.events.Event;
+  import flash.events.EventDispatcher;
+  import flash.events.IOErrorEvent;
+  import flash.events.KeyboardEvent;
+  import flash.events.MouseEvent;
+  import flash.events.ProgressEvent;
+  import flash.events.SampleDataEvent;
+  import flash.events.SecurityErrorEvent;
+  import flash.geom.Rectangle
+  import flash.media.Sound;
+  import flash.media.SoundChannel;
+  import flash.net.LocalConnection;
+  import flash.net.URLLoader;
+  import flash.net.URLLoaderDataFormat;
+  import flash.net.URLRequest;
+  import flash.text.TextField;
+  import flash.utils.ByteArray
   import flash.utils.getTimer;
-  //import deng.fzip.*;
-  //import nochump.util.zip.*
-
-    /*class FZipBackingStore extends InMemoryBackingStore {
-      public function FZipBackingStore(datazip:FZip) {
-        var dirs:Object = {}
-        var n:int = datazip.getFileCount();
-         addDirectory("/");
-        for(var i:int=0; i<n; i++) {
-          var fzf:FZipFile = datazip.getFileAt(i);
-          trace(fzf.filename)
-          var idx:int = fzf.filename.lastIndexOf("/");
-          if(idx == fzf.filename.length-1){
-            trace("dir: " + fzf.filename)
-              addDirectory("/"+fzf.filename);
-          } else {
-            trace("file: " + fzf.filename)
-            addFile("/"+fzf.filename, fzf.content);
-          }
-        }
-      }
-    }
-
-    class RootFSBackingStore extends InMemoryBackingStore {
-      public function RootFSBackingStore(data:ByteArray) {
-        var zip = new ZipFile(data)
-        for (var i = 0; i < zip.entries.length; i++) {
-          var e = zip.entries[i]
-          if (e.isDirectory()) {
-            addDirectory(e.name)
-          } else {
-            addFile(e.name, zip.getInput(e))
-          }
-        }
-      }
-    }*/
+  
+  import GLS3D.GLAPI;
+  import C_Run.initLib;
+  import C_Run.ram;
 
   public class AlcConsole extends Sprite
   {
@@ -102,28 +66,10 @@ package com.adobe.alchemy
       } catch(e:*) {
         // a zip based fs wasn't supplied
       }
-
-      //vfs = new HttpVFS();
-      //vfs.addEventListener(Event.COMPLETE, onComplete)
-      
-      //datazip = new FZip();
-      //datazip.load(new URLRequest("neverballdata.zip"));
-      //datazip.addEventListener(Event.COMPLETE, onComplete)
-
-      /*datazip = new URLLoader(new URLRequest("neverballdata.zip"));
-      datazip.dataFormat = URLLoaderDataFormat.BINARY;
-      datazip.addEventListener(AsyncErrorEvent.ASYNC_ERROR, onError)
-      datazip.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onError)
-      datazip.addEventListener(IOErrorEvent.IO_ERROR, onError)
-      datazip.addEventListener(Event.COMPLETE, onComplete)
-      datazip.addEventListener(ProgressEvent.PROGRESS, onProgress)*/
     }
 
     private function onComplete(e:Event):void
     {
-      //CModule.getVFS().addBackingStore(vfs, null)
-
-      //CModule.getVFS().addBackingStore(new RootFSBackingStore(datazip.data), null)
       initG(null)
     }
 
