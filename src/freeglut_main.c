@@ -1537,12 +1537,12 @@ void FGAPIENTRY glutMainLoopBody()
 }
 
 #ifdef __AVM2__
-#include <AS3.h>
+#include <AS3/AS3.h>
 
 void FGAPIENTRY glutMainLoop( void )
 {
     fgState.ExecState = GLUT_EXEC_STATE_RUNNING ;
-    AS3_LibInit();
+    AS3_GoAsync();
 }
 
 void FGAPIENTRY _avm2_glut_keyhandler(int keycode, int charcode, int isDown, int mx, int my)

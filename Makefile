@@ -4,6 +4,15 @@ $?GLS3D:=/path/to/gls3d
 SRC=$(wildcard src/*.c)
 OBJS=$(subst .c,.o,$(SRC))
 
+FSIMPORTs=-import $(ALCHEMY)/usr/lib/builtin.abc \
+			-import $(ALCHEMY)/usr/lib/playerglobal.abc \
+			-import $(ALCHEMY)/usr/lib/BinaryData.abc \
+			-import $(ALCHEMY)/usr/lib/ISpecialFile.abc \
+			-import $(ALCHEMY)/usr/lib/IBackingStore.abc \
+			-import $(ALCHEMY)/usr/lib/IBackingStoreManager.abc \
+			-import $(ALCHEMY)/usr/lib/InMemoryBackingStore.abc \
+			-import $(ALCHEMY)/usr/lib/PlayerPosix.abc
+
 .PHONY: demos
 
 all:
@@ -20,16 +29,18 @@ clean:
 demos/AlcConsole.abc: demos/AlcConsole.as
 	@echo "Compiling AlcConsole.abc"
 	@java -classpath $(ALCHEMY)/usr/lib/asc.jar macromedia.asc.embedding.ScriptCompiler \
-	-abcfuture -AS3 -strict -optimize \
-	-import $(ALCHEMY)/usr/lib/builtin.abc \
-	-import $(ALCHEMY)/usr/lib/playerglobal.abc \
-	-import $(GLS3D)/install/usr/lib/libGL.abc \
-	-import $(ALCHEMY)/usr/lib/CModule.abc \
-	-import $(ALCHEMY)/usr/lib/C_Run.abc \
-	-import $(ALCHEMY)/usr/lib/initLib.abc \
-	-import $(ALCHEMY)/usr/lib/BinaryData.abc \
-	-import $(ALCHEMY)/usr/lib/PlayerPosix.abc \
-	demos/AlcConsole.as -outdir demos -out AlcConsole
+		-abcfuture -AS3 -strict -optimize \
+		-import $(ALCHEMY)/usr/lib/builtin.abc \
+		-import $(ALCHEMY)/usr/lib/playerglobal.abc \
+		-import $(GLS3D)/install/usr/lib/libGL.abc \
+		-import $(ALCHEMY)/usr/lib/ISpecialFile.abc \
+		-import $(ALCHEMY)/usr/lib/IBackingStore.abc \
+		-import $(ALCHEMY)/usr/lib/IBackingStoreManager.abc \
+		-import $(ALCHEMY)/usr/lib/CModule.abc \
+		-import $(ALCHEMY)/usr/lib/C_Run.abc \
+		-import $(ALCHEMY)/usr/lib/BinaryData.abc \
+		-import $(ALCHEMY)/usr/lib/PlayerPosix.abc \
+		demos/AlcConsole.as -outdir demos -out AlcConsole
 
 demos: demos/AlcConsole.abc
 
@@ -63,13 +74,8 @@ demos: demos/AlcConsole.abc
 	@echo "Compiling lesson19.swf"
 	@rm -f demos/NeHeLesson19/embed*
 	@cd demos/NeHeLesson19 && $(ALCHEMY)/usr/bin/genfs --type=embed vfs embed
-	@cd demos/NeHeLesson19/ && java -Xmx1G -classpath $(ALCHEMY)/usr/lib/asc.jar macromedia.asc.embedding.ScriptCompiler \
-	-AS3 \
-	-import $(ALCHEMY)/usr/lib/builtin.abc \
-	-import $(ALCHEMY)/usr/lib/playerglobal.abc \
-	-import $(ALCHEMY)/usr/lib/BinaryData.abc \
-	-import $(ALCHEMY)/usr/lib/PlayerPosix.abc \
-	embed*.as -outdir . -out embed
+	cd demos/NeHeLesson19/ && java -Xmx1G -classpath $(ALCHEMY)/usr/lib/asc.jar macromedia.asc.embedding.ScriptCompiler \
+	-AS3 $(FSIMPORTS) embed*.as -outdir . -out embed
 	@$(ALCHEMY)/usr/bin/g++ -O4 \
 		-I$(GLS3D)/install/usr/include/ \
 		-Iinstall/usr/include/ \
@@ -82,12 +88,7 @@ demos: demos/AlcConsole.abc
 	@rm -f demos/NeHeLesson11/embed*
 	@cd demos/NeHeLesson11 && $(ALCHEMY)/usr/bin/genfs --type=embed vfs embed
 	@cd demos/NeHeLesson11/ && java -Xmx1G -classpath $(ALCHEMY)/usr/lib/asc.jar macromedia.asc.embedding.ScriptCompiler \
-	-AS3 \
-	-import $(ALCHEMY)/usr/lib/builtin.abc \
-	-import $(ALCHEMY)/usr/lib/playerglobal.abc \
-	-import $(ALCHEMY)/usr/lib/BinaryData.abc \
-	-import $(ALCHEMY)/usr/lib/PlayerPosix.abc \
-	embed*.as -outdir . -out embed
+	-AS3  $(FSIMPORTS) embed*.as -outdir . -out embed
 	@$(ALCHEMY)/usr/bin/g++ -O4 \
 		-I$(GLS3D)/install/usr/include/ \
 		-Iinstall/usr/include/ \
@@ -100,12 +101,7 @@ demos: demos/AlcConsole.abc
 	@rm -f demos/NeHeLesson12/embed*
 	@cd demos/NeHeLesson12 && $(ALCHEMY)/usr/bin/genfs --type=embed vfs embed
 	@cd demos/NeHeLesson12/ && java -Xmx1G -classpath $(ALCHEMY)/usr/lib/asc.jar macromedia.asc.embedding.ScriptCompiler \
-	-AS3 \
-	-import $(ALCHEMY)/usr/lib/builtin.abc \
-	-import $(ALCHEMY)/usr/lib/playerglobal.abc \
-	-import $(ALCHEMY)/usr/lib/BinaryData.abc \
-	-import $(ALCHEMY)/usr/lib/PlayerPosix.abc \
-	embed*.as -outdir . -out embed
+	-AS3  $(FSIMPORTS) embed*.as -outdir . -out embed
 	@$(ALCHEMY)/usr/bin/g++ -O4 \
 		-I$(GLS3D)/install/usr/include/ \
 		-Iinstall/usr/include/ \
@@ -118,12 +114,7 @@ demos: demos/AlcConsole.abc
 	@rm -f demos/NeHeLesson08/embed*
 	@cd demos/NeHeLesson08 && $(ALCHEMY)/usr/bin/genfs --type=embed vfs embed
 	@cd demos/NeHeLesson08/ && java -Xmx1G -classpath $(ALCHEMY)/usr/lib/asc.jar macromedia.asc.embedding.ScriptCompiler \
-	-AS3 \
-	-import $(ALCHEMY)/usr/lib/builtin.abc \
-	-import $(ALCHEMY)/usr/lib/playerglobal.abc \
-	-import $(ALCHEMY)/usr/lib/BinaryData.abc \
-	-import $(ALCHEMY)/usr/lib/PlayerPosix.abc \
-	embed*.as -outdir . -out embed
+	-AS3  $(FSIMPORTS) embed*.as -outdir . -out embed
 	@$(ALCHEMY)/usr/bin/g++ -O4 \
 		-I$(GLS3D)/install/usr/include/ \
 		-Iinstall/usr/include/ \
@@ -137,12 +128,7 @@ demos: demos/AlcConsole.abc
 	@rm -f demos/NeHeLesson07/embed*
 	@cd demos/NeHeLesson07 && $(ALCHEMY)/usr/bin/genfs --type=embed vfs embed
 	@cd demos/NeHeLesson07/ && java -Xmx1G -classpath $(ALCHEMY)/usr/lib/asc.jar macromedia.asc.embedding.ScriptCompiler \
-	-AS3 \
-	-import $(ALCHEMY)/usr/lib/builtin.abc \
-	-import $(ALCHEMY)/usr/lib/playerglobal.abc \
-	-import $(ALCHEMY)/usr/lib/BinaryData.abc \
-	-import $(ALCHEMY)/usr/lib/PlayerPosix.abc \
-	embed*.as -outdir . -out embed
+	-AS3  $(FSIMPORTS) embed*.as -outdir . -out embed
 	@$(ALCHEMY)/usr/bin/g++ -O4 \
 		-I$(GLS3D)/install/usr/include/ \
 		-Iinstall/usr/include/ \
@@ -156,12 +142,7 @@ demos: demos/AlcConsole.abc
 	@rm -f demos/NeHeLesson06/embed*
 	@cd demos/NeHeLesson06 && $(ALCHEMY)/usr/bin/genfs --type=embed vfs embed
 	@cd demos/NeHeLesson06/ && java -Xmx1G -classpath $(ALCHEMY)/usr/lib/asc.jar macromedia.asc.embedding.ScriptCompiler \
-	-AS3 \
-	-import $(ALCHEMY)/usr/lib/builtin.abc \
-	-import $(ALCHEMY)/usr/lib/playerglobal.abc \
-	-import $(ALCHEMY)/usr/lib/BinaryData.abc \
-	-import $(ALCHEMY)/usr/lib/PlayerPosix.abc \
-	embed*.as -outdir . -out embed
+	-AS3 $(FSIMPORTS) embed*.as -outdir . -out embed
 	@$(ALCHEMY)/usr/bin/g++ -O4 \
 		-I$(GLS3D)/install/usr/include/ \
 		-Iinstall/usr/include/ \

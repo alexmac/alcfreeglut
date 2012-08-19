@@ -1,8 +1,9 @@
-package com.adobe.alchemy
+package flascc
 {
   import flash.display.Bitmap
   import flash.display.BitmapData
   import flash.display.DisplayObjectContainer;
+  import flash.display.Loader;
   import flash.display.Sprite;
   import flash.display.Stage3D;
   import flash.display.StageAlign;
@@ -26,16 +27,17 @@ package com.adobe.alchemy
   import flash.net.URLLoaderDataFormat;
   import flash.net.URLRequest;
   import flash.text.TextField;
+  import flash.ui.Mouse;
   import flash.utils.ByteArray
+  import flash.utils.ByteArray;
+  import flash.utils.Endian;
   import flash.utils.getTimer;
   
   import GLS3D.GLAPI;
-  import C_Run.initLib;
-  import C_Run.ram;
+  import flascc.vfs.ISpecialFile;
 
-  public class AlcConsole extends Sprite
+  public class Console extends Sprite implements ISpecialFile
   {
-    public static var current:AlcConsole;
     private var enableConsole:Boolean = false;
     private static var _width:int = 500;
     private static var _height:int = 500;
@@ -51,26 +53,26 @@ package com.adobe.alchemy
     private var _context:Context3D;
     private var rendered:Boolean = false;
     private var datazip:URLLoader;
-    //private var vfs:HttpVFS;
 
-    public function AlcConsole(container:DisplayObjectContainer = null)
+    /**
+    * A basic implementation of a console for flascc apps.
+    * The PlayerPosix class delegates to this for things like read/write
+    * so that console output can be displayed in a TextField on the Stage.
+    */
+    public function Console(container:DisplayObjectContainer = null)
     {
-      AlcConsole.current = this;
-      stage.frameRate = 60;
+      CModule.rootSprite = container ? container.root : this
 
-      initG(null)
-
-      try {
-        var ns:Namespace = new Namespace("com.adobe.alchemyvfs");
-        CModule.getVFS().addBackingStore(new ns::RootFSBackingStore(), null)
-      } catch(e:*) {
-        // a zip based fs wasn't supplied
+      if(CModule.runningAsWorker()) {
+        return;
       }
-    }
 
-    private function onComplete(e:Event):void
-    {
-      initG(null)
+      if(container) {
+        container.addChild(this)
+        init(null)
+      } else {
+        addEventListener(Event.ADDED_TO_STAGE, init)
+      }
     }
 
     public function send(value:String):void
@@ -86,8 +88,15 @@ package com.adobe.alchemy
     {
     }
 
-    private function initG(e:Event):void
+    private function init(e:Event):void
     {
+      try {
+        var ns:Namespace = new Namespace("flascc.vfs");
+        CModule.vfs.addBackingStore(new ns::RootFSBackingStore(), null)
+      } catch(e:*) {
+        // a zip based fs wasn't supplied
+      }
+      
       inputContainer = new Sprite()
       addChild(inputContainer)
 
@@ -146,40 +155,45 @@ package com.adobe.alchemy
       this.removeEventListener(Event.ENTER_FRAME, runMain);
       var argv:Vector.<String> = new Vector.<String>();
       argv.push("/data/neverball.swf");
-      initLib(this, argv);
-      mainloopTickPtr = CModule.getPublicSym("glutMainLoopBody");
-      keyHandlerPtr = CModule.getPublicSym("_avm2_glut_keyhandler");
+      CModule.startAsync(this, argv);
+      mainloopTickPtr = CModule.getPublicSymbol("glutMainLoopBody");
+      keyHandlerPtr = CModule.getPublicSymbol("_avm2_glut_keyhandler");
 
       framebufferBlit(null);
       addEventListener(Event.ENTER_FRAME, framebufferBlit);
     }
 
-    public function write(fd:int, buf:int, nbyte:int, errno_ptr:int):int
+    /**
+    * The PlayerPosix implementation will use this function to handle
+    * C IO write requests to the file "/dev/tty" (e.g. output from
+    * printf will pass through this function). See the ISpecialFile
+    * documentation for more information about the arguments and return value.
+    */
+    public function write(fd:int, bufPtr:int, nbyte:int, errnoPtr:int):int
     {
-      var str:String = CModule.readString(buf, nbyte);
-      i_write(str);
-      return nbyte;
+      var str:String = CModule.readString(bufPtr, nbyte)
+      consoleWrite(str)
+      return nbyte
     }
 
-    public function read(fd:int, buf:int, nbyte:int, errno_ptr:int):int
+    public function read(fd:int, bufPtr:int, nbyte:int, errnoPtr:int):int
     {
       if(fd == 0 && nbyte == 1) {
-        keybytes.position = kp++;
+        keybytes.position = kp++
         if(keybytes.bytesAvailable) {
-          CModule.write8(buf, keybytes.readUnsignedByte());
+          CModule.write8(bufPtr, keybytes.readUnsignedByte())
         } else {
-        keybytes.position = 0;
-        kp = 0;
+          keybytes.position = 0
+          kp = 0
         }
       }
-      return 0;
+      return 0
     }
 
-    public function bufferMouseMove(me:MouseEvent) 
-    {
-      me.stopPropagation();
-      mx = me.stageX;
-      my = me.stageY;
+    public function bufferMouseMove(me:MouseEvent) {
+      me.stopPropagation()
+      mx = me.stageX
+      my = me.stageY
     }
     
     public function bufferMouseDown(me:MouseEvent) 
@@ -205,10 +219,11 @@ package com.adobe.alchemy
       ke.stopPropagation();
 
       keyhandlerargs[0] = ke.keyCode;
-      keyhandlerargs[1] = 1;
-      keyhandlerargs[2] = mx;
-      keyhandlerargs[3] = my;
-      CModule.callFun(keyHandlerPtr, keyhandlerargs);
+      keyhandlerargs[1] = ke.charCode;
+      keyhandlerargs[2] = 0;
+      keyhandlerargs[3] = mx;
+      keyhandlerargs[4] = my;
+      CModule.callI(keyHandlerPtr, keyhandlerargs);
     }
     
     public function bufferKeyUp(ke:KeyboardEvent) 
@@ -216,40 +231,27 @@ package com.adobe.alchemy
       ke.stopPropagation();
 
       keyhandlerargs[0] = ke.keyCode;
-      keyhandlerargs[1] = 0;
-      keyhandlerargs[2] = mx;
-      keyhandlerargs[3] = my;
-      CModule.callFun(keyHandlerPtr, keyhandlerargs);
+      keyhandlerargs[1] = ke.charCode;
+      keyhandlerargs[2] = 0;
+      keyhandlerargs[3] = mx;
+      keyhandlerargs[4] = my;
+      CModule.callI(keyHandlerPtr, keyhandlerargs);
     }
 
     public function consoleWrite(s:String):void
     {
+      trace(s)
       if(enableConsole) {
         _tf.appendText(s);
         _tf.scrollV = _tf.maxScrollV
       }
-      trace(s);
-    }
-
-    public function i_exit(code:int):void
-    {
-      consoleWrite("\nexit code: " + code + "\n");
-    }
-
-    public function i_error(e:String):void
-    {
-       consoleWrite("\nexception: " + e + "\n");
-    }
-
-    public function i_write(str:String):void
-    {
-      consoleWrite(str);
     }
 
     public function framebufferBlit(e:Event):void
     {
+      CModule.serviceUIRequests()
       var gl:GLAPI = GLAPI.instance;
-      CModule.callFun(mainloopTickPtr, new Vector.<int>());
+      CModule.callI(mainloopTickPtr, new Vector.<int>());
       gl.context.present();
       gl.context.clear(1.0, 0.0, 0.0);
     }
