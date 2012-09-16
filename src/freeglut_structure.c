@@ -384,8 +384,6 @@ void fgEnumWindows( FGCBenumerator enumCallback, SFG_Enumerator* enumerator )
 {
     SFG_Window *window;
 
-    fprintf(stderr, "fgEnumWindows...\n");
-
     FREEGLUT_INTERNAL_ERROR_EXIT ( enumCallback && enumerator,
                                    "Enumerator or callback missing from window enumerator call",
                                    "fgEnumWindows" );

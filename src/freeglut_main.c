@@ -182,27 +182,20 @@ static void fghReshapeWindow ( SFG_Window *window, int width, int height )
  */
 static void fghRedrawWindow ( SFG_Window *window )
 {
-    fprintf(stderr, "fghRedrawWindow 1...\n");
     SFG_Window *current_window = fgStructure.CurrentWindow;
 
     freeglut_return_if_fail( window );
 
-    fprintf(stderr, "fghRedrawWindow 2...\n");
     freeglut_return_if_fail( FETCH_WCB ( *window, Display ) );
-    fprintf(stderr, "fghRedrawWindow 3...\n");
 
     window->State.Redisplay = GL_FALSE;
 
     freeglut_return_if_fail( window->State.Visible );
 
-    fprintf(stderr, "fghRedrawWindow 4...\n");
-
     fgSetWindow( window );
 
     if( window->State.NeedToResize )
     {
-        fprintf(stderr, "fghRedrawWindow 5...\n");
-
         fghReshapeWindow(
             window,
             window->State.Width,
@@ -211,8 +204,6 @@ static void fghRedrawWindow ( SFG_Window *window )
 
         window->State.NeedToResize = GL_FALSE;
     }
-
-    fprintf(stderr, "fghRedrawWindow display...\n");
 
     INVOKE_WCB( *window, Display, ( ) );
 
@@ -225,8 +216,6 @@ static void fghRedrawWindow ( SFG_Window *window )
 static void fghcbDisplayWindow( SFG_Window *window,
                                 SFG_Enumerator *enumerator )
 {
-    fprintf(stderr, "fghcbDisplayWindow...\n");
-
     if( window->State.Redisplay &&
         window->State.Visible )
     {
@@ -1547,7 +1536,6 @@ void FGAPIENTRY glutMainLoop( void )
 
 void FGAPIENTRY _avm2_glut_keyhandler(int keycode, int charcode, int isDown, int mx, int my)
 {
-    fprintf(stderr, "_avm2_glut_keyhandler\n");
     int keypress = -1;
 
     SFG_Window *window = (SFG_Window *)fgStructure.Windows.First;

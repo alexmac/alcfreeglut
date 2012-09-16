@@ -14,3 +14,4 @@ examples/Quake3/BaseQ3
 examples/cube2/vfs
 examples/cube2/zipvfs/
 embed*
+.DS_Store

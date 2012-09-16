@@ -1,4 +1,14 @@
-package flascc
+/*
+** ADOBE SYSTEMS INCORPORATED
+** Copyright 2012 Adobe Systems Incorporated. All Rights Reserved.
+**
+** NOTICE:  Adobe permits you to use, modify, and distribute this file in
+** accordance with the terms of the Adobe license agreement accompanying it.
+** If you have received this file from a source other than Adobe, then your use,
+** modification, or distribution of it requires the prior written permission of Adobe.
+*/
+
+package com.adobe.flascc
 {
   import flash.display.Bitmap
   import flash.display.BitmapData
@@ -34,8 +44,14 @@ package flascc
   import flash.utils.getTimer;
   
   import GLS3D.GLAPI;
-  import flascc.vfs.ISpecialFile;
+  import com.adobe.flascc.CModule;
+  import com.adobe.flascc.vfs.ISpecialFile;
 
+  /**
+  * A basic implementation of a console for flascc apps.
+  * The PlayerKernel class delegates to this for things like read/write,
+  * so that console output can be displayed in a TextField on the Stage.
+  */
   public class Console extends Sprite implements ISpecialFile
   {
     private var enableConsole:Boolean = false;
@@ -55,9 +71,8 @@ package flascc
     private var datazip:URLLoader;
 
     /**
-    * A basic implementation of a console for flascc apps.
-    * The PlayerPosix class delegates to this for things like read/write
-    * so that console output can be displayed in a TextField on the Stage.
+    * To Support the preloader case you might want to have the Console
+    * act as a child of some other DisplayObjectContainer.
     */
     public function Console(container:DisplayObjectContainer = null)
     {
@@ -66,13 +81,17 @@ package flascc
       if(CModule.runningAsWorker()) {
         return;
       }
-
+      
       if(container) {
         container.addChild(this)
         init(null)
       } else {
         addEventListener(Event.ADDED_TO_STAGE, init)
       }
+
+    private function onComplete(e:Event):void
+    {
+      init(null)
     }
 
     public function send(value:String):void
@@ -88,7 +107,12 @@ package flascc
     {
     }
 
-    private function init(e:Event):void
+    /**
+    * All of the real flascc init happens in this method,
+    * which is either run on startup or once the SWF has
+    * been added to the stage.
+    */
+    protected function init(e:Event):void
     {
       try {
         var ns:Namespace = new Namespace("flascc.vfs");
@@ -149,23 +173,40 @@ package flascc
         _context.configureBackBuffer(_width, _height, 4, true /*enableDepthAndStencil*/ );
     }
 
-
     private function runMain(event:Event):void
     {
       this.removeEventListener(Event.ENTER_FRAME, runMain);
       var argv:Vector.<String> = new Vector.<String>();
       argv.push("/data/neverball.swf");
+      
+      // change to false to prevent running main in the background
+      // when Workers are supported
+      const runMainBg:Boolean = true
+
+      // PlayerKernel will delegate read/write requests to the "/dev/tty"
+      // file to the object specified with this API.
+      CModule.vfs.console = this
+      
+      try {
+        //namespace ns = "com.adobe.flascc.vfs";
+        //CModule.vfs.addBackingStore(new ns::["RootFSBackingStore"](), null)
+        CModule.vfs.addBackingStore(new com.adobe.flascc.vfs.RootFSBackingStore(), null)
+      } catch(e:*) {
+        // a zip based fs wasn't supplied
+        trace("No fs supplied...");
+      }
+
       CModule.startAsync(this, argv);
       mainloopTickPtr = CModule.getPublicSymbol("glutMainLoopBody");
       keyHandlerPtr = CModule.getPublicSymbol("_avm2_glut_keyhandler");
 
-      framebufferBlit(null);
-      addEventListener(Event.ENTER_FRAME, framebufferBlit);
+      enterFrame(null);
+      addEventListener(Event.ENTER_FRAME, enterFrame);
     }
 
     /**
-    * The PlayerPosix implementation will use this function to handle
-    * C IO write requests to the file "/dev/tty" (e.g. output from
+    * The PlayerKernel implementation uses this function to handle
+    * C IO write requests to the file "/dev/tty" (for example, output from
     * printf will pass through this function). See the ISpecialFile
     * documentation for more information about the arguments and return value.
     */
@@ -176,18 +217,46 @@ package flascc
       return nbyte
     }
 
+    /**
+    * The PlayerKernel implementation uses this function to handle
+    * C IO read requests to the file "/dev/tty" (for example, reads from stdin
+    * will expect this function to provide the data). See the ISpecialFile
+    * documentation for more information about the arguments and return value.
+    */
     public function read(fd:int, bufPtr:int, nbyte:int, errnoPtr:int):int
     {
       if(fd == 0 && nbyte == 1) {
         keybytes.position = kp++
         if(keybytes.bytesAvailable) {
-          CModule.write8(bufPtr, keybytes.readUnsignedByte())
+          CModule.write8(bufPtr, keybytes.readUnsignedByte());
         } else {
           keybytes.position = 0
           kp = 0
         }
       }
       return 0
+    }
+    
+    /**
+    * The PlayerKernel implementation uses this function to handle
+    * C fcntl requests to the file "/dev/tty." 
+    * See the ISpecialFile documentation for more information about the
+    * arguments and return value.
+    */
+    public function fcntl(fd:int, com:int, data:int, errnoPtr:int):int
+    {
+      return 0
+    }
+    
+    /**
+    * The PlayerKernel implementation uses this function to handle
+    * C ioctl requests to the file "/dev/tty." 
+    * See the ISpecialFile documentation for more information about the
+    * arguments and return value.
+    */
+    public function ioctl(fd:int, com:int, data:int, errnoPtr:int):int
+    {
+      return 0;
     }
 
     public function bufferMouseMove(me:MouseEvent) {
@@ -219,10 +288,9 @@ package flascc
       ke.stopPropagation();
 
       keyhandlerargs[0] = ke.keyCode;
-      keyhandlerargs[1] = ke.charCode;
-      keyhandlerargs[2] = 0;
-      keyhandlerargs[3] = mx;
-      keyhandlerargs[4] = my;
+      keyhandlerargs[1] = 1;
+      keyhandlerargs[2] = mx;
+      keyhandlerargs[3] = my;
       CModule.callI(keyHandlerPtr, keyhandlerargs);
     }
     
@@ -231,23 +299,30 @@ package flascc
       ke.stopPropagation();
 
       keyhandlerargs[0] = ke.keyCode;
-      keyhandlerargs[1] = ke.charCode;
-      keyhandlerargs[2] = 0;
-      keyhandlerargs[3] = mx;
-      keyhandlerargs[4] = my;
+      keyhandlerargs[1] = 0;
+      keyhandlerargs[2] = mx;
+      keyhandlerargs[3] = my;
       CModule.callI(keyHandlerPtr, keyhandlerargs);
     }
 
-    public function consoleWrite(s:String):void
+    /**
+    * Helper function that traces to the flashlog text file and also
+    * displays output in the on-screen textfield console.
+    */
+    protected function consoleWrite(s:String):void
     {
       trace(s)
       if(enableConsole) {
-        _tf.appendText(s);
+        _tf.appendText(s)
         _tf.scrollV = _tf.maxScrollV
       }
     }
 
-    public function framebufferBlit(e:Event):void
+    /**
+    * The enterFrame callback is run once every frame. UI thunk requests should be handled
+    * here by calling <code>CModule.serviceUIRequests()</code> (see CModule ASdocs for more information on the UI thunking functionality).
+    */
+    protected function enterFrame(e:Event):void
     {
       CModule.serviceUIRequests()
       var gl:GLAPI = GLAPI.instance;
