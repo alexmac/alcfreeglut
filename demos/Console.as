@@ -10,8 +10,8 @@
 
 package com.adobe.flascc
 {
-  import flash.display.Bitmap
-  import flash.display.BitmapData
+  import flash.display.Bitmap;
+  import flash.display.BitmapData;
   import flash.display.DisplayObjectContainer;
   import flash.display.Loader;
   import flash.display.Sprite;
@@ -29,7 +29,7 @@ package com.adobe.flascc
   import flash.events.ProgressEvent;
   import flash.events.SampleDataEvent;
   import flash.events.SecurityErrorEvent;
-  import flash.geom.Rectangle
+  import flash.geom.Rectangle;
   import flash.media.Sound;
   import flash.media.SoundChannel;
   import flash.net.LocalConnection;
@@ -48,8 +48,8 @@ package com.adobe.flascc
   import com.adobe.flascc.vfs.ISpecialFile;
 
   /**
-  * A basic implementation of a console for flascc apps.
-  * The PlayerKernel class delegates to this for things like read/write,
+  * A basic implementation of a console for FlasCC apps.
+  * The PlayerKernel class delegates to this for things like read/write
   * so that console output can be displayed in a TextField on the Stage.
   */
   public class Console extends Sprite implements ISpecialFile
@@ -88,6 +88,7 @@ package com.adobe.flascc
       } else {
         addEventListener(Event.ADDED_TO_STAGE, init)
       }
+    }
 
     private function onComplete(e:Event):void
     {
@@ -108,7 +109,7 @@ package com.adobe.flascc
     }
 
     /**
-    * All of the real flascc init happens in this method,
+    * All of the real FlasCC init happens in this method
     * which is either run on startup or once the SWF has
     * been added to the stage.
     */
@@ -157,7 +158,6 @@ package com.adobe.flascc
       trace(_context.driverInfo);
       GLAPI.init(_context, null, stage);
       var gl:GLAPI = GLAPI.instance;
-      //gl.log = this;
       gl.context.clear(0.0, 0.0, 0.0);
       gl.context.present();
       gl.context.clear(0.0, 0.0, 0.0);
@@ -205,8 +205,8 @@ package com.adobe.flascc
     }
 
     /**
-    * The PlayerKernel implementation uses this function to handle
-    * C IO write requests to the file "/dev/tty" (for example, output from
+    * The PlayerKernel implementation will use this function to handle
+    * C IO write requests to the file "/dev/tty" (e.g. output from
     * printf will pass through this function). See the ISpecialFile
     * documentation for more information about the arguments and return value.
     */
@@ -228,8 +228,10 @@ package com.adobe.flascc
       if(fd == 0 && nbyte == 1) {
         keybytes.position = kp++
         if(keybytes.bytesAvailable) {
-          CModule.write8(bufPtr, keybytes.readUnsignedByte());
+          CModule.write8(bufPtr, keybytes.readUnsignedByte())
+          return 1
         } else {
+          keybytes.length = 0
           keybytes.position = 0
           kp = 0
         }
@@ -238,8 +240,8 @@ package com.adobe.flascc
     }
     
     /**
-    * The PlayerKernel implementation uses this function to handle
-    * C fcntl requests to the file "/dev/tty." 
+    * The PlayerKernel implementation will use this function to handle
+    * C fcntl requests to the file "/dev/tty" 
     * See the ISpecialFile documentation for more information about the
     * arguments and return value.
     */
@@ -249,8 +251,8 @@ package com.adobe.flascc
     }
     
     /**
-    * The PlayerKernel implementation uses this function to handle
-    * C ioctl requests to the file "/dev/tty." 
+    * The PlayerKernel implementation will use this function to handle
+    * C ioctl requests to the file "/dev/tty" 
     * See the ISpecialFile documentation for more information about the
     * arguments and return value.
     */
@@ -319,8 +321,8 @@ package com.adobe.flascc
     }
 
     /**
-    * The enterFrame callback is run once every frame. UI thunk requests should be handled
-    * here by calling <code>CModule.serviceUIRequests()</code> (see CModule ASdocs for more information on the UI thunking functionality).
+    * The enterFrame callback will be run once every frame. UI thunk requests should be handled
+    * here by calling CModule.serviceUIRequests() (see CModule ASdocs for more information on the UI thunking functionality).
     */
     protected function enterFrame(e:Event):void
     {

@@ -4,7 +4,7 @@ $?GLS3D:=/path/to/gls3d
 SRC=$(wildcard src/*.c)
 OBJS=$(subst .c,.o,$(SRC))
 
-AS3COMP=java -jar $(FLASCC)/usr/lib/falcon-asc.jar -merge -md -AS3 -optimize \
+AS3COMP=java -jar $(FLASCC)/usr/lib/asc2.jar -merge -md -AS3 -optimize \
 	-import $(FLASCC)/usr/lib/builtin.abc \
 	-import $(FLASCC)/usr/lib/playerglobal.abc \
 	-import $(FLASCC)/usr/lib/BinaryData.abc \
